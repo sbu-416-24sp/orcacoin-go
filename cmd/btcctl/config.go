@@ -128,12 +128,10 @@ func normalizeAddress(addr string, chain *chaincfg.Params, useWallet bool) (stri
 			}
 		case &chaincfg.FreshNetParams:
 			if useWallet {
-				// TODO: add port once freshnet is supported in btcwallet
-				paramErr := fmt.Errorf("cannot use -wallet with -freshnet, btcwallet not yet compatible with freshnet")
-				return "", paramErr
+				defaultPort = "41602"
 			} else {
 				defaultPort = "41601"
-			} 
+			}
 		case &chaincfg.SimNetParams:
 			if useWallet {
 				defaultPort = "18554"
@@ -284,7 +282,7 @@ func loadConfig() (*config, []string, error) {
 	if cfg.FreshNet {
 		numNets++
 		network = &chaincfg.FreshNetParams
-	} 
+	}
 	if cfg.SimNet {
 		numNets++
 		network = &chaincfg.SimNetParams
