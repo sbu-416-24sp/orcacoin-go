@@ -11,7 +11,7 @@ import (
 
 // activeNetParams is a pointer to the parameters specific to the
 // currently active bitcoin network.
-var activeNetParams = &mainNetParams
+var activeNetParams = &freshNetParams
 
 // params is used to group parameters for various networks such as the main
 // network and test networks.
@@ -37,8 +37,7 @@ var mainNetParams = params{
 var freshNetParams = params{
 	Params:  &chaincfg.FreshNetParams,
 	rpcPort: "41601",
- }
- 
+}
 
 // regressionNetParams contains parameters specific to the regression test
 // network (wire.TestNet).  NOTE: The RPC port is intentionally different

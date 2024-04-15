@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/btcsuite/btcd/blockchain"
+	"github.com/btcsuite/btcd/btcec/v2"
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -556,7 +557,7 @@ func loadConfig() (*config, []string, error) {
 	if cfg.FreshNet {
 		numNets++
 		activeNetParams = &freshNetParams
-	} 
+	}
 	if cfg.RegressionTest {
 		numNets++
 		activeNetParams = &regressionNetParams
@@ -940,11 +941,27 @@ func loadConfig() (*config, []string, error) {
 	for _, strAddr := range cfg.MiningAddrs {
 		addr, err := btcutil.DecodeAddress(strAddr, activeNetParams.Params)
 		if err != nil {
-			str := "%s: mining address '%s' failed to decode: %v"
-			err := fmt.Errorf(str, funcName, strAddr, err)
-			fmt.Fprintln(os.Stderr, err)
-			fmt.Fprintln(os.Stderr, usageMessage)
-			return nil, nil, err
+			// if there's error decoding, treat it as a wallet seed instead
+			seed := []byte(strAddr)
+
+			// Generate a private key from the seed and get its corresponding public key
+			privateKey, _ := btcec.PrivKeyFromBytes(seed)
+			publicKey := privateKey.PubKey()
+
+			// create a hash of the public key and use it to get the address
+			pubKeyHash := btcutil.Hash160(publicKey.SerializeCompressed())
+			address, _ := btcutil.NewAddressPubKeyHash(pubKeyHash, &chaincfg.FreshNetParams)
+
+			// tries to decode the address again
+			addr, err = btcutil.DecodeAddress(address.EncodeAddress(), activeNetParams.Params)
+			if err != nil {
+				str := "%s: mining address '%s' failed to decode: %v"
+				err := fmt.Errorf(str, funcName, strAddr, err)
+				fmt.Fprintln(os.Stderr, err)
+				fmt.Fprintln(os.Stderr, usageMessage)
+				return nil, nil, err
+			}
+			fmt.Println("Wallet Address:", address.EncodeAddress())
 		}
 		if !addr.IsForNet(activeNetParams.Params) {
 			str := "%s: mining address '%s' is on the wrong network"
