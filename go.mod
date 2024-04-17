@@ -20,6 +20,9 @@ require (
 	golang.org/x/sys v0.0.0-20200814200057-3d37ad5750ed
 )
 
+// CHANGE: change this to the location where your btcutil is located
+replace github.com/btcsuite/btcd/btcutil => /Users/draku/go/src/orcacointest/btcutil
+
 require (
 	github.com/aead/siphash v1.0.1 // indirect
 	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
