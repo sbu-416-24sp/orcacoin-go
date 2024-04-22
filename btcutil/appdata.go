@@ -113,3 +113,12 @@ func BtcdDir() string {
 
 	return filepath.Join(goPath, "src/orcacointest")
 }
+
+// returns the path to the directory in which btcwallet is located
+// requirement: GOPATH needs to be initialized as a path variable
+func BtcWalletDir() string {
+	goPath := os.Getenv("GOPATH")
+
+	// CHANGE: might have to change depending on where it is located
+	return filepath.Join(goPath, "OrcaWallet")
+}

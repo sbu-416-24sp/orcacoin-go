@@ -17,21 +17,21 @@ import (
 	"github.com/btcsuite/btcd/btcutil"
 	"github.com/btcsuite/btcd/chaincfg"
 	flags "github.com/jessevdk/go-flags"
-	sampleConfigFilename = "sample-btcctl.conf"
 )
 
 const (
 	// unusableFlags are the command usage flags which this utility are not
 	// able to use.  In particular it doesn't support websockets and
 	// consequently notifications.
-	unusableFlags = btcjson.UFWebsocketOnly | btcjson.UFNotification
+	unusableFlags        = btcjson.UFWebsocketOnly | btcjson.UFNotification
+	sampleConfigFilename = "sample-btcctl.conf"
 )
 
 var (
 	btcdHomeDir           = btcutil.AppDataDir("btcd", false)
 	btcctlHomeDir         = btcutil.AppDataDir("btcctl", false)
 	btcwalletHomeDir      = btcutil.AppDataDir("btcwallet", false)
-	defaultConfigFile = filepath.Join(btcutil.BtcdDir(), "cmd/btcctl", sampleConfigFilename)
+	defaultConfigFile     = filepath.Join(btcutil.BtcdDir(), "cmd/btcctl", sampleConfigFilename)
 	defaultRPCServer      = "localhost"
 	defaultRPCCertFile    = filepath.Join(btcdHomeDir, "rpc.cert")
 	defaultWalletCertFile = filepath.Join(btcwalletHomeDir, "rpc.cert")
