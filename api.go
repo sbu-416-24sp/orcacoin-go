@@ -7,14 +7,14 @@ import (
 
 // Commands
 const (
-	getBalanceCommand                   = "getbalance"
-	sendToAddressCommand                = "sendtoaddress"
-	generateCommand                     = "generate"
-	walletPassphraseCommand             = "walletpassphrase"
-	getWalletAddressCommand             = "getaddressesbyaccount"
-	getAllAccountsCommand               = "listaccounts"
-	getAllTransactionsCommand           = "listtransactions"
-	getWalletAddressForFirstTimeCommand = "getaccountaddress"
+	getBalanceCommand               = "getbalance"
+	sendToAddressCommand            = "sendtoaddress"
+	generateCommand                 = "generate"
+	walletPassphraseCommand         = "walletpassphrase"
+	getWalletAddressCommand         = "getaddressesbyaccount"
+	getAllAccountsCommand           = "listaccounts"
+	getAllTransactionsCommand       = "listtransactions"
+	generateNewWalletAddressCommand = "getaccountaddress"
 )
 
 // func main() {
@@ -53,7 +53,7 @@ func apiCall(args []string) {
 				fmt.Println("Error when running 'getbalance':", err)
 				return
 			}
-		case sendToAddressCommand, generateCommand, walletPassphraseCommand, getWalletAddressCommand, getWalletAddressForFirstTimeCommand:
+		case sendToAddressCommand, generateCommand, walletPassphraseCommand, getWalletAddressCommand, generateNewWalletAddressCommand:
 			if len(args[argIdx:]) < 2 {
 				fmt.Printf("Not enough arguments for the command '%s'\n", arg)
 				return
