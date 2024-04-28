@@ -465,7 +465,7 @@ var FreshNetParams = Params{
 	ReduceMinDifficulty:      true,
 	MinDiffReductionTime:     0,
 	// can use generate command from RPC to generate blocks in lieu of standard mining procedures
-	GenerateSupported: false,
+	GenerateSupported: true,
 
 	// Checkpoints ordered from oldest to newest.
 	// these are specific blocks as the chain grows to maintain stability and security
