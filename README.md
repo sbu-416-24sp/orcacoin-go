@@ -1,46 +1,26 @@
-btcd
+Orcacoin
 ====
 
-[![Build Status](https://github.com/btcsuite/btcd/workflows/Build%20and%20Test/badge.svg)](https://github.com/btcsuite/btcd/actions)
-[![Coverage Status](https://coveralls.io/repos/github/btcsuite/btcd/badge.svg?branch=master)](https://coveralls.io/github/btcsuite/btcd?branch=master)
-[![ISC License](https://img.shields.io/badge/license-ISC-blue.svg)](http://copyfree.org)
-[![GoDoc](https://img.shields.io/badge/godoc-reference-blue.svg)](https://pkg.go.dev/github.com/btcsuite/btcd)
 
-btcd is an alternative full node bitcoin implementation written in Go (golang).
+Orcacoin is an alternative full node bitcoin implementation written in Go (golang). 
 
-This project is currently under active development and is in a Beta state.  It
-is extremely stable and has been in production use since October 2013.
+This project is currently under active development.
+
+It is extremely stable.
 
 It properly downloads, validates, and serves the block chain using the exact
-rules (including consensus bugs) for block acceptance as Bitcoin Core.  We have
-taken great care to avoid btcd causing a fork to the block chain.  It includes a
-full block validation testing framework which contains all of the 'official'
-block acceptance tests (and some additional ones) that is run on every pull
-request to help ensure it properly follows consensus.  Also, it passes all of
-the JSON test data in the Bitcoin Core code.
+rules (including consensus bugs) for block acceptance as Bitcoin Core.  
 
 It also properly relays newly mined blocks, maintains a transaction pool, and
-relays individual transactions that have not yet made it into a block.  It
-ensures all individual transactions admitted to the pool follow the rules
-required by the block chain and also includes more strict checks which filter
-transactions based on miner requirements ("standard" transactions).
+relays individual transactions that have not yet made it into a block.  
 
-One key difference between btcd and Bitcoin Core is that btcd does *NOT* include
-wallet functionality and this was a very intentional design decision.  See the
-blog entry [here](https://web.archive.org/web/20171125143919/https://blog.conformal.com/btcd-not-your-moms-bitcoin-daemon)
-for more details.  This means you can't actually make or receive payments
-directly with btcd.  That functionality is provided by the
-[btcwallet](https://github.com/btcsuite/btcwallet) and
-[Paymetheus](https://github.com/btcsuite/Paymetheus) (Windows-only) projects
-which are both under active development.
+Orcacoin itself does **NOT** include a wallet implementation and we have a separate repository where we have done work on a [OrcaWallet](https://github.com/sbu-416-24sp/orcanet-go/tree/main/wallet)
 
 ## Requirements
 
 [Go](http://golang.org) 1.17 or newer.
 
 ## Installation
-
-https://github.com/btcsuite/btcd/releases
 
 #### Linux/BSD/MacOSX/POSIX - Build from Source
 
@@ -59,6 +39,7 @@ recommended that `GOPATH` is set to a directory in your home directory such as
 `~/goprojects` to avoid write permission issues.  It is also recommended to add
 `$GOPATH/bin` to your `PATH` at this point.
 
+Since orcacoin was implemented on top of btcd, our dependencies will be the same as btcd.
 - Run the following commands to obtain btcd, all dependencies, and install it:
 
 ```bash
@@ -82,40 +63,90 @@ $ git pull
 $ go install -v . ./cmd/...
 ```
 
-## Getting Started
+## Setting Up User Info
 
-btcd has several configuration options available to tweak how it runs, but all
-of the basic operations described in the intro section work with zero
-configuration.
-
-#### Linux/BSD/POSIX/Source
-
+### sample-btcd.conf
+Include this information in the file:
 ```bash
+rpcuser=set-your-username
+rpcpass=set-your-password
+
+miningaddr=set-your-wallet-addres-1
+miningaddr=set-your-wallet-address-2
+```
+(You can have multiple wallet addresses associated with a single wallet)
+
+### cmd/btcctl/sample-btcctl.conf
+Include this information in the file:
+```bash
+rpcuser=same-username-as-above
+rpcpass=same-password-as-above
+```
+
+## Running The Node
+
+To run an OrcaCoin node, there are several configurations. The two most important ones are the default config (you have to manually mine blocks), and the config that lets your node mine automatically.
+
+***Running the default config***
+```bash
+$ go install
+$ go build
 $ ./btcd
 ```
 
-## IRC
+***Running the mining config***
+```bash
+$ go install
+$ go build
+$ ./btcd --generate
+```
 
-- irc.libera.chat
-- channel #btcd
-- [webchat](https://web.libera.chat/gamja/?channels=btcd)
+## api.go Commands
 
-## Issue Tracker
+***generateNewWalletCommand***: Generates a wallet address for the specified wallet.
 
-The [integrated github issue tracker](https://github.com/btcsuite/btcd/issues)
-is used for this project.
+- *Argument* (String) → Name of the wallet account, usually “default”
+- Generates wallet address.
+- **Returns** wallet address.
+- NOTE: Running this command will generate a new wallet address for the same account (it should not be used for retrieving wallet address)
 
-## Documentation
+***getWalletAddressCommand***: Retrieves the wallet address of the specified wallet.
 
-The documentation is a work-in-progress.  It is located in the [docs](https://github.com/btcsuite/btcd/tree/master/docs) folder.
+- *Argument* (String)→ Name of the wallet account, usually “default”
+- **Returns** the wallet address
 
-## Release Verification
+***getAllAccountsCommand***: Lists all the wallet accounts' names.
 
-Please see our [documentation on the current build/verification
-process](https://github.com/btcsuite/btcd/tree/master/release) for all our
-releases for information on how to verify the integrity of published releases
-using our reproducible build system.
+- No arguments needed
+- **Returns** list of all the accounts which can then be used for retrieving wallet address
 
-## License
+***getBalanceCommand***: Retrieves the balance of the current running wallet.
 
-btcd is licensed under the [copyfree](http://copyfree.org) ISC License.
+- No arguments needed
+- **Returns** the balance 
+
+***walletPassphraseCommand***: Unlocks the wallet for the specified amount of time.
+
+- *Argument 1* (String)→ Wallet passphrase which was set when wallet was created 
+- *Argument 2* (String)→ Amount of time to keep the wallet unlocked in millisecond 
+- Unlocks the wallet for specified amount of time
+- NOTE : Current wallet needs to be unlocked before proceeding with money transfer
+
+***sendToAddressCommand***: Transfer Orca Coin from current wallet to the specified wallet address.
+
+- Reminder to unlock the wallet first! (**run the walletPassphraseCommand**)
+- *Argument 1* (String)→ receiving wallet address
+- *Argument 2* (String) → Amount of money
+- **Returns** the transaction hash
+
+
+***generateCommand***: Mines the specified number of blocks and sends rewards to the running wallet.
+
+- *Argument* (String)→ Number of blocks to generate
+- **Returns** the array of block hashes
+
+***getAllTransactionsCommand***: **Returns** the list of transactions.
+
+- No argument
+- **Returns** a list of all the transactions (including confirmed and unconfirmed transactions)
+- NOTE: It can take few hours for the transaction to be confirmed and appear on blockchain
